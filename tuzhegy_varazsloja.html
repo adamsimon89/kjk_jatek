@@ -1,4 +1,1377 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Tűzhegy Varázslója</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #0d0804;
+    --bg2:      #1a0f06;
+    --bg3:      #261508;
+    --gold:     #c8973a;
+    --gold2:    #f0c060;
+    --red:      #8b1a1a;
+    --red2:     #c0392b;
+    --text:     #e8d5b0;
+    --muted:    #9a8060;
+    --green:    #2e6b2e;
+    --green2:   #4caf50;
+    --border:   #3a2010;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Text', Georgia, serif;
+    font-size: 18px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(139,26,26,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 20% 80%, rgba(200,151,58,0.06) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    pointer-events: none; z-index: 0;
+  }
+
+  #app {
+    position: relative; z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #screen-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    gap: 0;
+  }
+
+  .title-ornament {
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 12px;
+    opacity: 0.6;
+    animation: flicker 4s infinite;
+  }
+
+  @keyframes flicker {
+    0%,95%,100% { opacity: 0.6; }
+    96% { opacity: 0.3; }
+    97% { opacity: 0.7; }
+    98% { opacity: 0.2; }
+  }
+
+  .title-main {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(32px, 7vw, 68px);
+    font-weight: 900;
+    color: var(--gold2);
+    line-height: 1.1;
+    margin: 12px 0 4px;
+    text-shadow:
+      0 0 40px rgba(200,151,58,0.5),
+      0 0 80px rgba(139,26,26,0.3),
+      2px 2px 0 rgba(0,0,0,0.8);
+    letter-spacing: 2px;
+  }
+
+  .title-sub {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(13px, 2.5vw, 20px);
+    color: var(--red2);
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .title-divider {
+    width: 300px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 16px auto;
+  }
+
+  .title-lore {
+    max-width: 520px;
+    font-size: 16px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.7;
+    margin-bottom: 32px;
+    padding: 0 20px;
+  }
+
+  .btn {
+    display: inline-block;
+    padding: 13px 32px;
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.05);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .btn:hover::after { opacity: 1; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #8b1a1a 0%, #5a0f0f 100%);
+    color: var(--gold2);
+    border: 1px solid var(--gold);
+    box-shadow: 0 0 20px rgba(139,26,26,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(135deg, #a02020 0%, #6a1515 100%);
+    box-shadow: 0 0 30px rgba(139,26,26,0.6), inset 0 1px 0 rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-choice {
+    width: 100%;
+    background: var(--bg2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    text-align: left;
+    padding: 14px 20px;
+    font-family: 'Crimson Text', serif;
+    font-size: 17px;
+    letter-spacing: 0.3px;
+    text-transform: none;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .btn-choice::before {
+    content: '▸ ';
+    color: var(--gold);
+    font-size: 14px;
+  }
+  .btn-choice:hover {
+    background: var(--bg3);
+    border-color: var(--gold);
+    color: var(--gold2);
+    box-shadow: inset 3px 0 0 var(--gold);
+  }
+  .btn-choice:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: var(--bg);
+  }
+
+  .btn-small {
+    background: var(--bg3);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+  .btn-small:hover { color: var(--gold); border-color: var(--gold); }
+
+  #screen-potion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    text-align: center;
+    gap: 16px;
+    padding: 40px 20px;
+  }
+
+  .potion-title {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    color: var(--gold2);
+    margin-bottom: 8px;
+  }
+
+  .potion-cards {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  .potion-card {
+    width: 200px;
+    padding: 24px 16px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .potion-card:hover {
+    border-color: var(--gold);
+    background: var(--bg3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .potion-icon { font-size: 36px; margin-bottom: 10px; }
+  .potion-name {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .potion-desc { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  #screen-game {
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+    padding-bottom: 40px;
+  }
+
+  .stats-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+  }
+  .stat-icon { font-size: 15px; }
+  .stat-label { color: var(--muted); font-size: 11px; }
+  .stat-val { color: var(--gold2); font-weight: 700; }
+  .stat-val.low { color: var(--red2); animation: pulse-red 1s infinite; }
+  @keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .stat-sep { color: var(--border); margin: 0 4px; }
+
+  .story-panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    line-height: 1.8;
+    font-size: 18px;
+    position: relative;
+    min-height: 180px;
+  }
+  .story-panel::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--gold), var(--red), transparent);
+  }
+
+  .story-text {
+    color: var(--text);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .story-text.visible { opacity: 1; }
+
+  .combat-log {
+    margin-top: 16px;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.4);
+    border-left: 3px solid var(--red);
+    font-size: 15px;
+    color: var(--text);
+    font-style: italic;
+    line-height: 1.6;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .combat-log div { margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 2px; }
+  .combat-log .hit-hero { color: #ff6b6b; font-weight: bold; }
+  .combat-log .hit-monster { color: #51cf66; font-weight: bold; }
+  .combat-log .lucky { color: var(--gold2); }
+
+  .monster-panel {
+    display: none;
+    background: linear-gradient(135deg, rgba(139,26,26,0.15), var(--bg2));
+    border: 1px solid var(--red);
+    padding: 16px 20px;
+    gap: 16px;
+    align-items: center;
+  }
+  .monster-panel.active { display: flex; }
+  .monster-name {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    color: var(--red2);
+    flex: 1;
+  }
+  .monster-hp-bar {
+    flex: 2;
+    height: 12px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid var(--red);
+    position: relative;
+    overflow: hidden;
+  }
+  .monster-hp-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--red2), #ff4444);
+    transition: width 0.2s;
+  }
+  .monster-stats { font-size: 14px; color: var(--muted); white-space: nowrap; }
+
+  .choices { display: flex; flex-direction: column; gap: 0; }
+
+  .item-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .item-tag {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .screen { display: none; }
+  .screen.active { display: flex; }
+
+  .overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+    padding: 40px;
+  }
+  .overlay.active { display: flex; animation: fade-in 0.3s forwards; }
+  @keyframes fade-in { from{opacity:0} to{opacity:1} }
+
+  .overlay-icon { font-size: 80px; animation: bounce 0.5s; }
+  @keyframes bounce { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+  .overlay-title {
+    font-family: 'Cinzel', serif;
+    font-size: 42px;
+    font-weight: 900;
+  }
+  .overlay-title.death { color: var(--red2); text-shadow: 0 0 30px rgba(192,57,43,0.8); }
+  .overlay-title.victory { color: var(--gold2); text-shadow: 0 0 30px rgba(200,151,58,0.8); }
+  .overlay-text { font-size: 18px; color: var(--muted); max-width: 500px; line-height: 1.7; }
+  .overlay-stats { font-size: 15px; color: var(--muted); font-style: italic; }
+
+  .flash {
+    position: fixed;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3);
+    border: 1px solid var(--gold);
+    padding: 10px 24px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--gold2);
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .flash.show { opacity: 1; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .section-num {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .hp-bar-wrap { flex: 1; min-width: 120px; }
+  .hp-bar {
+    height: 8px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    margin-top: 3px;
+    width: 100px;
+  }
+  .hp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--green2));
+    transition: width 0.2s;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <div id="screen-title" class="screen active">
+    <div class="title-ornament">⚔ ⚔ ⚔</div>
+    <h1 class="title-main">A Tűzhegy<br>Varázslója</h1>
+    <div class="title-sub">Kalandkönyv · Fighting Fantasy</div>
+    <div class="title-divider"></div>
+    <p class="title-lore">
+      Egy vakmerő kalandor vagy, aki bevágja magát a Tűzhegy barlangrendszerébe,
+      hogy megszerezze Zagor Varázsló kincsét. Csak te döntesz: merre mész, kivel harcolsz,
+      mit kockáztatsz. Szörnyekkel teli labirintus, titkos kulcsok, elvarázsolt lények várnak rád.
+    </p>
+    <button class="btn btn-primary" id="startBtn">⚔ Kaland Kezdése</button>
+    <div style="margin-top:14px; font-size:13px; color:var(--muted); font-style:italic;">
+      Steve Jackson &amp; Ian Livingstone klasszikusa alapján
+    </div>
+  </div>
+
+  <div id="screen-potion" class="screen">
+    <div class="potion-title">Válassz varázsitalt!</div>
+    <p style="color:var(--muted);font-size:16px;max-width:460px;text-align:center;line-height:1.6">
+      Indulás előtt egyetlen palack varázsitalt vihetsz magaddal az útra. Minden palackban két adag van.
+    </p>
+    <div class="potion-cards">
+      <div class="potion-card" onclick="choosePotion('skill')">
+        <div class="potion-icon">⚔️</div>
+        <div class="potion-name">Ügyesség Itala</div>
+        <div class="potion-desc">Visszaállítja Ügyességedet kezdeti értékére</div>
+      </div>
+      <div class="potion-card" onclick="choosePotion('stamina')">
+        <div class="potion-icon">❤️</div>
+        <div class="potion-name">Erő Itala</div>
+        <div class="potion-desc">Visszaállítja Életerődet kezdeti értékére</div>
+      </div>
+      <div class="potion-card" onclick="choosePotion('luck')">
+        <div class="potion-icon">🌟</div>
+        <div class="potion-name">Szerencse Itala</div>
+        <div class="potion-desc">Visszaállítja Szerencsédet és +1-et ad a maximumhoz</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="screen-game" class="screen">
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-icon">⚔️</span>
+        <div>
+          <span class="stat-label">ÜGYESSÉG</span><br>
+          <span class="stat-val" id="stat-skill">—</span>
+        </div>
+      </div>
+      <span class="stat-sep">|</span>
+      <div class="stat">
+        <span class="stat-icon">❤️</span>
+        <div>
+          <span class="stat-label">ÉLETERŐ</span><br>
+          <span class="stat-val" id="stat-stamina">—</span>
+          <div class="hp-bar"><div class="hp-fill" id="hp-fill"></div></div>
+        </div>
+      </div>
+      <span class="stat-sep">|</span>
+      <div class="stat">
+        <span class="stat-icon">🌟</span>
+        <div>
+          <span class="stat-label">SZERENCSE</span><br>
+          <span class="stat-val" id="stat-luck">—</span>
+        </div>
+      </div>
+      <span class="stat-sep">|</span>
+      <div class="stat">
+        <span class="stat-icon">🍖</span>
+        <div>
+          <span class="stat-label">ÉTEL</span><br>
+          <span class="stat-val" id="stat-food">—</span>
+        </div>
+      </div>
+      <span class="stat-sep">|</span>
+      <div class="stat">
+        <span class="stat-icon">💰</span>
+        <div>
+          <span class="stat-label">ARANY</span><br>
+          <span class="stat-val" id="stat-gold">—</span>
+        </div>
+      </div>
+      <span class="stat-sep">|</span>
+      <div class="stat">
+        <span class="stat-icon">🧪</span>
+        <div>
+          <span class="stat-label">ITAL</span><br>
+          <span class="stat-val" id="stat-potion">—</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="monster-panel" id="monster-panel">
+      <div>
+        <div class="monster-name" id="mon-name">—</div>
+        <div class="monster-stats">ÜGY: <span id="mon-skill">—</span> | ÉP: <span id="mon-hp">—</span></div>
+      </div>
+      <div class="monster-hp-bar"><div class="monster-hp-fill" id="mon-hp-fill" style="width:100%"></div></div>
+    </div>
+
+    <div class="story-panel">
+      <span class="section-num" id="section-num"></span>
+      <div class="story-text" id="story-text"></div>
+      <div class="combat-log" id="combat-log" style="display:none"></div>
+    </div>
+
+    <div class="item-bar" id="item-bar"></div>
+
+    <div class="choices" id="choices"></div>
+
+    <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+      <button class="btn btn-small" onclick="usePotion()" id="btn-potion">🧪 Varázsital</button>
+      <button class="btn btn-small" onclick="eatFood()">🍖 Enni (+4 ÉP)</button>
+      <button class="btn btn-small" onclick="showInventory()">📜 Felszerelés</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay-death">
+  <div class="overlay-icon">💀</div>
+  <div class="overlay-title death">MEGHALTÁL</div>
+  <div class="overlay-text" id="death-text">Életerőd nullára esett. Kalandod véget ért a Tűzhegy sötétjében...</div>
+  <div class="overlay-stats" id="death-stats"></div>
+  <button class="btn btn-primary" onclick="restartGame()" style="margin-top:8px">↺ Újra Kezdeni</button>
+</div>
+
+<div class="overlay" id="overlay-victory">
+  <div class="overlay-icon">👑</div>
+  <div class="overlay-title victory">GYŐZTÉL!</div>
+  <div class="overlay-text">Legyőzted Zagort, a Tűzhegy Varázslóját! A hatalmas láda kinyílik — arany és ékszer özönlik ki belőle. Neved bekerül a legendák közé.</div>
+  <div class="overlay-stats" id="victory-stats"></div>
+  <button class="btn btn-primary" onclick="restartGame()" style="margin-top:8px">↺ Újra Kezdeni</button>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<script>
+// ===================================================
+//  STATE
+// ===================================================
+let G = {};
+
+function d6() { return Math.floor(Math.random() * 6) + 1; }
+function d6x2() { return d6() + d6(); }
+
+function initGame() {
+  G = {
+    skill:      d6() + 6,
+    maxSkill:   0,
+    stamina:    d6x2() + 12,
+    maxStamina: 0,
+    luck:       d6() + 6,
+    maxLuck:    0,
+    food:       10,
+    gold:       15,
+    potion:     'stamina', 
+    potionDoses: 2,
+    keys:       [],
+    items:      [],
+    scene:      null,
+    combat:     null,  
+    combatLog:  [],
+    flags:      {}     
+  };
+  G.maxSkill   = G.skill;
+  G.maxStamina = G.stamina;
+  G.maxLuck    = G.luck;
+}
+
+function testLuck() {
+  const roll = d6x2();
+  const lucky = roll <= G.luck;
+  G.luck = Math.max(1, G.luck - 1);
+  return { lucky, roll };
+}
+
+function hasItem(name) { return G.items.includes(name); }
+function hasKey(name)  { return G.keys.includes(name); }
+function addItem(name) { if (!hasItem(name)) G.items.push(name); }
+function addKey(name)  { if (!hasKey(name))  G.keys.push(name); }
+
+// ===================================================
+//  UI HELPERS
+// ===================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const target = document.getElementById('screen-' + id);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'flex';
+  }
+}
+
+function updateStats() {
+  const sk = document.getElementById('stat-skill');
+  const st = document.getElementById('stat-stamina');
+  const lk = document.getElementById('stat-luck');
+  
+  if(!sk || !st || !lk) return;
+
+  sk.textContent = `${G.skill}/${G.maxSkill}`;
+  st.textContent = `${G.stamina}/${G.maxStamina}`;
+  lk.textContent = `${G.luck}/${G.maxLuck}`;
+  document.getElementById('stat-food').textContent  = G.food;
+  document.getElementById('stat-gold').textContent  = G.gold;
+  const potNames = { skill:'Ügyesség', stamina:'Erő', luck:'Szerencse' };
+  document.getElementById('stat-potion').textContent = `${potNames[G.potion]} (${G.potionDoses})`;
+
+  const pct = G.maxStamina > 0 ? (G.stamina / G.maxStamina * 100) : 0;
+  document.getElementById('hp-fill').style.width = pct + '%';
+  document.getElementById('hp-fill').style.background =
+    pct > 50 ? 'linear-gradient(90deg,#8b1a1a,#4caf50)' :
+    pct > 25 ? 'linear-gradient(90deg,#c0392b,#e67e22)' : '#c0392b';
+  st.classList.toggle('low', G.stamina <= 4);
+
+  const bar = document.getElementById('item-bar');
+  const all = [...G.keys.map(k => '🗝 ' + k), ...G.items];
+  bar.innerHTML = all.length
+    ? 'Nálad: ' + all.map(i => `<span class="item-tag">${i}</span>`).join('')
+    : '<span style="color:var(--border);font-size:13px">Nincs különleges tárgy</span>';
+}
+
+function renderScene(sectionNum, text, choices) {
+  document.getElementById('section-num').textContent = sectionNum ? `— ${sectionNum}. §  —` : '';
+  const el = document.getElementById('story-text');
+  el.classList.remove('visible');
+  el.innerHTML = text;
+  setTimeout(() => el.classList.add('visible'), 30);
+
+  document.getElementById('combat-log').style.display = 'none';
+  document.getElementById('combat-log').innerHTML = '';
+
+  const mp = document.getElementById('monster-panel');
+  mp.classList.remove('active');
+
+  const ch = document.getElementById('choices');
+  ch.innerHTML = '';
+  choices.forEach(([label, action, disabled]) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-choice';
+    btn.textContent = label;
+    btn.disabled = !!disabled;
+    btn.onclick = action;
+    ch.appendChild(btn);
+  });
+  updateStats();
+}
+
+function renderCombat() {
+  const mon = G.combat;
+  if (!mon) return;
+
+  const mp = document.getElementById('monster-panel');
+  mp.classList.add('active');
+  document.getElementById('mon-name').textContent = mon.name;
+  document.getElementById('mon-skill').textContent = mon.skill;
+  document.getElementById('mon-hp').textContent = mon.stamina;
+  const pct = Math.max(0, (mon.stamina / mon.maxStamina * 100));
+  document.getElementById('mon-hp-fill').style.width = pct + '%';
+
+  const log = document.getElementById('combat-log');
+  log.style.display = 'block';
+  log.innerHTML = G.combatLog.map(l => `<div>${l}</div>`).join('');
+  log.scrollTop = log.scrollHeight;
+
+  document.getElementById('section-num').textContent = `⚔ Harc: ${mon.name}`;
+
+  const ch = document.getElementById('choices');
+  ch.innerHTML = '';
+  
+  const actions = [
+    ['⚔ Támadás (kockadobás)', doCombatRound],
+    ['🌟 Szerencsepróba (sebzés módosítás)', doLuckAttack],
+    ['💨 Menekülés (–2 ÉP)', tryFlee],
+  ];
+  
+  actions.forEach(([label, fn]) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-choice';
+    btn.textContent = label;
+    btn.onclick = fn;
+    ch.appendChild(btn);
+  });
+  updateStats();
+}
+
+function flash(msg) {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function showOverlay(type, extra) {
+  const id = 'overlay-' + type;
+  if (extra) document.getElementById(extra.el).textContent = extra.text;
+  document.getElementById(id).classList.add('active');
+}
+
+// ===================================================
+//  FLOW CONTROL
+// ===================================================
+function startGame() {
+  initGame();
+  showScreen('potion');
+}
+
+function choosePotion(type) {
+  G.potion = type;
+  showScreen('game');
+  goScene('intro');
+}
+
+function restartGame() {
+  G.combat = null;
+  document.getElementById('overlay-death').classList.remove('active');
+  document.getElementById('overlay-victory').classList.remove('active');
+  showScreen('title');
+}
+
+function eatFood() {
+  if (G.combat) { flash('Harc közben nem ehetsz!'); return; }
+  if (G.food <= 0) { flash('Elfogyott az élelmiszer-készleted!'); return; }
+  G.food--;
+  const gained = Math.min(4, G.maxStamina - G.stamina);
+  G.stamina += gained;
+  flash(`🍖 Ettél! +${gained} Életerő (${G.stamina}/${G.maxStamina})`);
+  updateStats();
+}
+
+function usePotion() {
+  if (G.potionDoses <= 0) { flash('Elfogyott a varázsitalod!'); return; }
+  G.potionDoses--;
+  _applyPotion();
+  if (G.combat) { 
+    G.combatLog.push(`<span class="lucky">🧪 Megittad a varázsitalt harc közben!</span>`);
+    renderCombat();
+    return;
+  }
+  flash(`🧪 Varázsital megitva! (${G.potionDoses} adag maradt)`);
+  updateStats();
+}
+
+function _applyPotion() {
+  if (G.potion === 'skill')   { G.skill = G.maxSkill; }
+  if (G.potion === 'stamina') { G.stamina = G.maxStamina; }
+  if (G.potion === 'luck')    { G.luck = G.maxLuck; G.maxLuck++; G.luck++; }
+}
+
+function showInventory() {
+  const all = [...G.keys.map(k => '🗝 ' + k), ...G.items];
+  alert(
+    `⚔️ Ügyesség: ${G.skill}/${G.maxSkill}\n` +
+    `❤️ Életerő: ${G.stamina}/${G.maxStamina}\n` +
+    `🌟 Szerencse: ${G.luck}/${G.maxLuck}\n` +
+    `🍖 Étel: ${G.food} adag\n💰 Arany: ${G.gold}\n\n` +
+    `Tárgyak: ${all.length ? all.join(', ') : '(nincs)'}\n` +
+    `Kulcsok: ${G.keys.length}/3`
+  );
+}
+
+function die(reason) {
+  G.combat = null;
+  document.getElementById('death-text').textContent = reason || 'Életerőd nullára esett. Kalandod véget ért...';
+  document.getElementById('death-stats').textContent =
+    `Ügyesség: ${G.skill} | Életerő: 0 | Szerencse: ${G.luck} | Arany: ${G.gold} | Kulcsok: ${G.keys.length}/3`;
+  showOverlay('death', null);
+}
+
+function victory() {
+  G.combat = null;
+  document.getElementById('victory-stats').textContent =
+    `Végső állapot — Ügyesség: ${G.skill}/${G.maxSkill} | Életerő: ${G.stamina}/${G.maxStamina} | Arany: ${G.gold} | Kulcsok: ${G.keys.length}`;
+  showOverlay('victory', null);
+}
+
+// ===================================================
+//  COMBAT ENGINE
+// ===================================================
+function startCombat(name, skill, stamina, winScene, canFlee) {
+  G.combat = { 
+    name, 
+    skill, 
+    stamina, 
+    maxStamina: stamina, 
+    winScene, 
+    canFlee: !!canFlee,
+    lastRoundWinner: null 
+  };
+  G.combatLog = [`— Harc kezdete: ${name} (ÜGY: ${skill}, ÉP: ${stamina}) —`];
+  renderCombat();
+}
+
+function doCombatRound() {
+  const mon = G.combat;
+  if (!mon) return;
+
+  const heroRoll = d6x2();
+  const monRoll  = d6x2();
+  const heroAtk  = heroRoll + G.skill;
+  const monAtk   = monRoll  + mon.skill;
+
+  let line = `🎲 Te: ${heroRoll}+${G.skill}=${heroAtk} | ${mon.name}: ${monRoll}+${mon.skill}=${monAtk} → `;
+
+  if (heroAtk > monAtk) {
+    mon.stamina -= 2;
+    mon.lastRoundWinner = 'hero';
+    line += `<span class="hit-monster">✅ Sebezted: -2 ÉP (marad: ${mon.stamina})</span>`;
+  } else if (monAtk > heroAtk) {
+    G.stamina -= 2;
+    mon.lastRoundWinner = 'monster';
+    line += `<span class="hit-hero">💥 Megsebesített: -2 ÉP (marad: ${G.stamina})</span>`;
+  } else {
+    mon.lastRoundWinner = 'none';
+    line += `🔄 Döntetlen — kivédtétek egymást csapását`;
+  }
+
+  G.combatLog.push(line);
+  checkCombatEnd();
+}
+
+function doLuckAttack() {
+  const mon = G.combat;
+  if (!mon) return;
+
+  if (!mon.lastRoundWinner || mon.lastRoundWinner === 'none') {
+    flash('Csak egy csapás után tehetsz Szerencsepróbát!');
+    return;
+  }
+
+  const { lucky, roll } = testLuck();
+  let line = "";
+
+  if (mon.lastRoundWinner === 'hero') {
+    if (lucky) {
+      mon.stamina -= 2; // Extra 2 sebzés
+      line = `<span class="lucky">🌟 SZERENCSÉS! (dobás: ${roll}) Nagyobb csapás! Újabb -2 ÉP a szörnynek (marad: ${mon.stamina})</span>`;
+    } else {
+      mon.stamina += 1; // Elrontottad, kevesebbet sebez
+      line = `<span class="hit-hero">💔 BALSZERENCSE! (dobás: ${roll}) Csak felületi karcolás. A szörny visszakap +1 ÉP-t (marad: ${mon.stamina})</span>`;
+    }
+  } else if (mon.lastRoundWinner === 'monster') {
+    if (lucky) {
+      G.stamina += 1; // Kivédted a sebzés egy részét (+1 vissza)
+      line = `<span class="lucky">🌟 SZERENCSÉS! (dobás: ${roll}) Elugrottál! Csak 1 pontot sebeztél, +1 ÉP vissza neked (marad: ${G.stamina})</span>`;
+    } else {
+      G.stamina -= 1; // Rosszabb lett, még jobban megütött
+      line = `<span class="hit-hero">💔 BALSZERENCSE! (dobás: ${roll}) Telibe talált! Extra -1 ÉP tőled (marad: ${G.stamina})</span>`;
+    }
+  }
+
+  mon.lastRoundWinner = 'none'; // Csak egyszer lehet körönként elsütni
+  G.combatLog.push(line);
+  checkCombatEnd();
+}
+
+function tryFlee() {
+  if (!G.combat) return;
+  if (!G.combat.canFlee) {
+    flash('Nem tudsz menekülni ebből a harcból!');
+    return;
+  }
+  G.stamina -= 2;
+  G.combatLog.push(`<span class="hit-hero">💨 Menekülés! -2 ÉP (marad: ${G.stamina})</span>`);
+  
+  if (G.stamina <= 0) { 
+    die(); 
+    return; 
+  }
+  
+  flash('Sikerült elmenekülnöd!');
+  goScene('crossroads');
+}
+
+function checkCombatEnd() {
+  const mon = G.combat;
+  if (!mon) return;
+
+  if (G.stamina <= 0) {
+    renderCombat();
+    setTimeout(() => die(`${mon.name} legyőzött téged a harcban.`), 400);
+    return;
+  }
+  
+  if (mon.stamina <= 0) {
+    const won = mon.winScene;
+    G.combat = null; 
+    flash(`🏆 Győzelem! ${mon.name} elesett!`);
+    setTimeout(() => goScene(won), 500);
+    return;
+  }
+  
+  renderCombat();
+}
+
+// ===================================================
+//  SCENES
+// ===================================================
+function goScene(id) {
+  G.scene = id;
+  G.combat = null;
+  updateStats();
+
+  const S = SCENES[id];
+  if (!S) { 
+    renderScene('?', `<em>Ismeretlen jelenet: ${id}</em>`, [['← Vissza', ()=>goScene('crossroads')]]); 
+    return; 
+  }
+  
+  if (typeof S === 'function') { 
+    S(); 
+    return; 
+  }
+  
+  renderScene(S.num, S.text, S.choices());
+}
+
+// ===================================================
+//  THE ACTUAL ADVENTURE
+// ===================================================
+const SCENES = {
+
+  intro: {
+    num: null,
+    text: `Véget ért a kétnapi gyaloglás. A mohalepte sziklának dőlve pillanatra megpihensz, és felpillantasz.<br><br>
+    A <strong>Tűzhegy</strong> fenyegetőnek látszik — a meredek hegyoldalt hatalmas karcolások szabdalják, éles sziklák meredeznek belőle szinte természetellenes módon. A hegy tetejét hátborzongatóan vörös valami borítja: ettől kapta a nevét.<br><br>
+    A tisztással szemben egy <strong>barlang bejárata</strong> sötétlik. Meggyújtod a lámpásodat, kihúzod a kardodat, és belevágsz a sötétségbe. Pókhálók súrolják arcodat, apró lábak surrannak az árnyékban.<br><br>
+    Néhány méter után <strong>elágazáshoz érsz</strong>.`,
+    choices: () => [
+      ['Nyugat felé indulsz', () => goScene('west_fork')],
+      ['Kelet felé indulsz', () => goScene('east_fork')],
+    ]
+  },
+
+  west_fork: {
+    num: 71,
+    text: `A nyugati folyosón haladva egy kanyar után <strong>szunyókáló Goblin-őrt</strong> pillantasz meg. Mélyen alszik, hangosan horkol. Finoman kell elmenned mellette...`,
+    choices: () => [
+      ['Lábujjhegyen elmész (Szerencsepróba)', () => {
+        const {lucky, roll} = testLuck();
+        if (lucky) {
+          flash(`🌟 Szerencsés (dobás: ${roll}) — nem ébred fel!`);
+          goScene('goblin_passed');
+        } else {
+          flash(`💔 Balszerencse (dobás: ${roll}) — felébred!`);
+          goScene('goblin_wakes');
+        }
+      }],
+      ['Inkább megtámadod alvás közben (+2 ÜGY előny)', () => goScene('goblin_sneak_attack')],
+    ]
+  },
+
+  goblin_sneak_attack: () => {
+    startCombat('Goblin (meglepett)', 3, 5, 'goblin_passed', false);
+  },
+
+  goblin_wakes: {
+    num: 248,
+    text: `A Goblin felriad, és dühösen feléd ugrott! Nincs más választásod.`,
+    choices: () => [
+      ['Megküzdesz a Goblinnal', () => startCombat('Goblin', 5, 5, 'goblin_passed', false)],
+    ]
+  },
+
+  goblin_passed: {
+    num: 301,
+    text: `Sikeresen elhaladsz az alvó Goblin mellett. A folyosó egy nagyobb terembe nyílik. A sarokból dühös csörtetést hallasz — egy <strong>Ork</strong> veszi észre jelenlétedet.`,
+    choices: () => [
+      ['Megküzdesz az Orkkal', () => startCombat('Ork', 6, 4, 'west_room_clear', true)],
+      ['Visszafordulsz az elágazáshoz', () => goScene('crossroads')],
+    ]
+  },
+
+  west_room_clear: () => {
+    G.gold += 3;
+    addKey('bronzkulcs');
+    flash('💰 +3 arany és 🗝 Bronzkulcs');
+    goScene('west_room_looted');
+  },
+
+  west_room_looted: {
+    num: 'Terem',
+    text: `Az Ork holtteste felett átlépve átkutatod a termet. A sarokba dobott iszákban <strong>3 aranyat</strong> és egy <strong>bronzkulcsot</strong> találsz — az egyik a Varázsló ládáját zárja.<br><br>
+    A terem északi falán ajtó áll. Keletre egy szűk átjáró vezet.`,
+    choices: () => [
+      ['Átmész az északi ajtón', () => goScene('north_passage')],
+      ['A szűk keleti átjárón mész', () => goScene('east_crawl')],
+    ]
+  },
+
+  east_fork: {
+    num: 278,
+    text: `A keleti átjáró végén <strong>lelakatolt faajtóhoz</strong> érsz. Hallgatózol — tompa dobogást hallasz belülről.`,
+    choices: () => [
+      ['Betaszítod az ajtót', () => {
+        if (d6() >= 3) {
+          goScene('east_room_entry');
+        } else {
+          G.stamina -= 2;
+          if (G.stamina <= 0) { die(); return; }
+          flash('💥 Az ajtó nem enged! -2 ÉP');
+          goScene('east_fork');
+        }
+      }],
+      ['Visszafordulsz az elágazáshoz', () => goScene('crossroads')],
+    ]
+  },
+
+  east_room_entry: {
+    num: 19,
+    text: `Az ajtó kitárul. A szobában <strong>két Goblin</strong> ugrik talpra, és libasorban támad rád! Egyenként kell velük megküzdened.`,
+    choices: () => [
+      ['Megküzdesz velük (2 Goblin egymás után)', () => startCombat('1. Goblin', 5, 5, 'east_goblin2', true)],
+    ]
+  },
+
+  east_goblin2: () => startCombat('2. Goblin', 5, 6, 'east_room_clear', true),
+
+  east_room_clear: () => {
+    G.gold += 5;
+    addKey('vaskulcs');
+    flash('💰 +5 arany és 🗝 Vaskulcs');
+    goScene('east_room_looted');
+  },
+
+  east_room_looted: {
+    num: 21,
+    text: `A két Goblin holtteste felett átlépve megvizsgálod a szoba sarkában lévő ládát. Erős tölgyfából és vasból készült — de az egyik Goblin zsebéből <strong>vaskulcsot</strong> veszel elő, és kinyitod. Benne: <strong>5 arany</strong>.<br><br>
+    A szoba északi falán titkos ajtót sejtsz.`,
+    choices: () => [
+      ['Megkeresed a titkos ajtót', () => {
+        if (d6() >= 3) goScene('secret_corridor');
+        else { flash('Nem találsz semmit...'); goScene('crossroads'); }
+      }],
+      ['Visszamész az elágazáshoz', () => goScene('crossroads')],
+    ]
+  },
+
+  secret_corridor: {
+    num: 14,
+    text: `Megtalálod a titkos ajtót! Egy szűk, nedves folyosóra bukkanasz. A falakon furcsa, mágikus rúnák izzanak halvány fénnyel. A folyosó végén... <strong>lépések hangját hallod</strong>.`,
+    choices: () => [
+      ['Megküzdesz az ismeretlen lénnyel', () => {
+        const m = [['Csontváz',5,4],['Zombi',6,5],['Mutáns',6,4]][Math.floor(Math.random()*3)];
+        startCombat(m[0], m[1], m[2], 'secret_chest', false);
+      }],
+    ]
+  },
+
+  secret_chest: () => {
+    addKey('ezüstkulcs');
+    flash('🗝 Ezüstkulcs megtalálva!');
+    goScene('secret_chest_scene');
+  },
+
+  secret_chest_scene: {
+    num: '117',
+    get text() { return `A folyosó végén egy kis szobában <strong>ezüstkulcsot</strong> találsz elrejtve egy kőhasadékban. Ez a harmadik kulcs lehet...<br><br>
+    Kulcsaid száma: <strong>${G.keys.length}/3</strong>`; },
+    choices: () => [
+      ['Vissza a főútvonalra', () => goScene('crossroads')],
+    ]
+  },
+
+  crossroads: {
+    num: 'Keresztút',
+    text: `Visszatértél a főbejárat utáni elágazáshoz. A folyosó észak felé folytatódik — messze, halvány fáklyafény pislog. Magad mögött hallod a szél morajlását.`,
+    choices: () => [
+      ['Észak felé mész (a folyó irányába)', () => goScene('north_passage')],
+      ['Kelet felé indulsz (Goblin terem)', () => goScene('east_fork')],
+      ['Nyugat felé indulsz', () => goScene('west_fork')],
+    ]
+  },
+
+  north_passage: {
+    num: 4,
+    text: `Egy hosszú észak-déli folyosón haladsz. Fáklyák pislognak a falakban, megvilágítva a nedves követ. Egy elágazáshoz érsz — kelet felé egy ajtó, tovább észak felé a folyó irányába vezet az út.`,
+    choices: () => [
+      ['Bekopogsz a keleti ajtón', () => goScene('dwarf_room')],
+      ['Tovább észak felé haladsz', () => goScene('troll_approach')],
+    ]
+  },
+
+  dwarf_room: {
+    num: 5,
+    text: `Egy jókedvű, dünnyögő hangot hallasz. Bekopogtatol. Az ajtó kinyílik — <strong>egy barátságos Törpe</strong> néz rád, pipával a szájában.<br><br>
+    — Nahát, kalandor! Épp időben jöttél. Leülsz egy kicsit?<br><br>
+    A Törpe ételt, italt kínál, és mesél a Varázslótól. Ha figyelmesen hallgatsz, megtudsz valamit...`,
+    choices: () => [
+      ['Leülsz és hallgatsz (+4 ÉP, hasznos tanács)', () => {
+        G.stamina = Math.min(G.maxStamina, G.stamina + 4);
+        G.flags.dwarf_info = true;
+        flash('❤️ +4 Életerő! A Törpe elmesél valamit a Varázslóról.');
+        goScene('dwarf_info');
+      }],
+      ['Köszönöm, nem kell, sietsz', () => goScene('north_passage')],
+    ]
+  },
+
+  dwarf_info: {
+    num: null,
+    get text() { return `A Törpe hosszan mesél a Varázslóról:<br><br>
+    <em>— Zagornak három zárat csináltak a ládájára. Három különböző kulcs kell hozzá. Az egyik bronzból, a másik vasból, a harmadik ezüstből való. Ha mind a HTML3 megvan... nos, jó szerencsét!</em><br><br>
+    Kulcsaid eddig: <strong>${[...G.keys].join(', ') || '(nincs)'}</strong>`; },
+    choices: () => [
+      ['Tovább mész észak felé', () => goScene('troll_approach')],
+    ]
+  },
+
+  troll_approach: {
+    num: 'Folyosó',
+    text: `A folyosó kiszélesedik. Doboló lépéseket hallasz magad előtt — és egy sarokba fordulva <strong>egy hatalmas Troll</strong> áll az utadban. Háromszor akkora, mint egy ember, bunkósbotot szorongat a kezében.`,
+    choices: () => [
+      ['Megküzdesz a Trollal', () => startCombat('Troll', 7, 8, 'troll_defeated', true)],
+      ['Megpróbálod megvesztegetni (5 arany)', () => {
+        if (G.gold >= 5) {
+          G.gold -= 5;
+          flash('💰 -5 arany — a Troll félreáll, de vigyorgva néz utánad.');
+          goScene('pre_river');
+        } else {
+          flash('Nincs elég aranyad! A Troll megtámad!');
+          startCombat('Troll', 7, 8, 'troll_defeated', false);
+        }
+      }],
+      ['Visszafordulsz', () => goScene('north_passage')],
+    ]
+  },
+
+  troll_defeated: () => {
+    G.gold += 6;
+    flash('💰 +6 arany a Troll övéből');
+    goScene('pre_river');
+  },
+
+  pre_river: {
+    num: 7,
+    text: `A Troll mögött a folyosó egy hatalmas föld alatti csarnokba nyílik. Közepén <strong>zúgva folyik egy fekete folyó</strong>. A túlparton pislogó fények: a Varázsló tanyája. A parton egy faoszlopon csengő lóg.`,
+    choices: () => [
+      ['Megcsörgeted a csengőt (Révész hív)', () => goScene('ferryman')],
+      ['Megpróbálsz átúszni', () => {
+        const roll = d6x2();
+        if (roll <= G.skill) {
+          G.stamina = Math.max(1, G.stamina - 1);
+          flash(`💪 Átúsztál! Kockadobás: ${roll} ≤ ${G.skill}. -1 ÉP fáradságtól.`);
+          goScene('inner_sanctum');
+        } else {
+          G.stamina -= 4;
+          flash(`🌊 Az ár majdnem elvitt! Dobás: ${roll}. -4 ÉP!`);
+          if (G.stamina <= 0) { die('A folyó sodra magával ragadott. Vége.'); return; }
+          goScene('pre_river');
+        }
+      }],
+    ]
+  },
+
+  ferryman: {
+    num: 3,
+    text: `A csengő tompa hangon megzendül. Néhány pillanat múlva egy ráncos, öreg ember mászik egy kis evezős csónakba az északi oldalon. Lassan átevez, és feléd sántikál.<br><br>
+    — <em>Három arany.</em><br>— Ez sok! — mondod.<br>— <em>Infláció van.</em> — morog.`,
+    choices: () => [
+      ['Kifizeted a 3 aranyat', () => {
+        if (G.gold >= 3) {
+          G.gold -= 3;
+          flash('💰 -3 arany — az öreg átvisz a folyón.');
+          goScene('inner_sanctum');
+        } else {
+          flash('Nincs elég aranyad!');
+          goScene('pre_river');
+        }
+      }],
+      ['Megfenyegeted', () => {
+        startCombat('Öreg Révész (valójában: Wight)', 9, 6, 'ferryman_won', false);
+      }],
+    ]
+  },
+
+  ferryman_won: () => {
+    flash('A Wight felbomlik! Az átkelés szabad...');
+    goScene('inner_sanctum');
+  },
+
+  inner_sanctum: {
+    num: 'Belső termek',
+    text: `A túlparton egy hosszú, rúnás falú folyosón haladsz. A levegő szinte vibrál a mágikus energiától. <strong>Két ajtó</strong> előtted — az egyik nyitva áll, a másik be van zárva.`,
+    choices: () => [
+      ['A nyitott ajtón mész be', () => goScene('painting_room')],
+      ['A zárt ajtót feszegeted', () => {
+        if (d6() >= 4) goScene('locked_room');
+        else {
+          G.stamina -= 1;
+          flash('Az ajtó nem enged. -1 ÉP.');
+          goScene('inner_sanctum');
+        }
+      }],
+      ['Tovább haladsz egyennesen', () => goScene('warlock_anteroom')],
+    ]
+  },
+
+  painting_room: {
+    num: 25,
+    text: `A szoba falain <strong>festmények</strong> sorakoznak — férfiportrék. A nyugati falon lévő képnél megáll a szemed: a névtábla szerint <em>Zagor, a Varázsló</em>. Fiatal, sötét szemű, fekete kesztyűs kezét tartja maga elé.<br><br>
+    A festmény keretéből egy kis papírtekercset húzol ki — varázsige lehet...`,
+    choices: () => [
+      ['Elveszed a tekercset', () => {
+        addItem('varázstekercs');
+        flash('📜 Varázstekercs felvéve!');
+        goScene('inner_sanctum');
+      }],
+      ['Visszamész', () => goScene('inner_sanctum')],
+    ]
+  },
+
+  locked_room: {
+    num: 8,
+    text: `A szobában egy <strong>Barbár</strong> fogad hatalmas csatabárddal — úgy látszik, ő is a kincset keresi, de nem barátságos. A szemközti ajtón keresztül elmenekülhetsz a harc közben is.`,
+    choices: () => [
+      ['Megküzdesz a Barbárral', () => startCombat('Barbár', 7, 6, 'barbarian_won', true)],
+      ['Elmész a szemközti ajtón (menekülés)', () => { G.stamina -= 2; if (G.stamina<=0){die();return;} flash('-2 ÉP menekülés közben'); goScene('inner_sanctum');}],
+    ]
+  },
+
+  barbarian_won: () => {
+    G.gold += 4;
+    addItem('erős pajzs (+1 ÜGY harcban)');
+    G.maxSkill = Math.min(G.maxSkill + 1, G.maxSkill + 1);
+    flash('💰 +4 arany és 🛡 Erős pajzs (+1 ÜGY)!');
+    goScene('inner_sanctum');
+  },
+
+  warlock_anteroom: {
+    num: 'Előtér',
+    get text() { return `A folyosó végén egy masszív <strong>vas ajtó</strong> áll — rajta három különböző méretű zárlyuk. Ez a Varázsló kincstárának bejárata.<br><br>
+    Kulcsaid: <strong>${G.keys.join(', ') || '(nincs)'}</strong> (${G.keys.length}/3)`; },
+    choices: () => {
+      const choices = [];
+      if (G.keys.length >= 3) {
+        choices.push(['🗝 Kinyitod a zárat a három kulcssal', () => goScene('warlock_chamber')]);
+      } else {
+        choices.push([`Még ${3 - G.keys.length} kulcs hiányzik — vissza kell menned`, () => goScene('inner_sanctum'), true]);
+        choices.push(['Visszamész kulcsot keresni', () => goScene('inner_sanctum')]);
+      }
+      choices.push(['Betöröd az ajtót (kockadobás)', () => {
+        const r = d6x2();
+        if (r <= 5) { goScene('warlock_chamber'); }
+        else { G.stamina -= 3; if(G.stamina<=0){die();return;} flash(`Kudarcot vallottál. -3 ÉP. Dobás: ${r}`); goScene('warlock_anteroom'); }
+      }]);
+      return choices;
+    }
+  },
+
+  warlock_chamber: {
+    num: 'A Varázsló terme',
+    text: `Az ajtó kinyílik — felrobban a mágikus zár. Hatalmas, díszes terembe lépsz. Közepén egy trónon ül <strong>ZAGOR</strong>, a Tűzhegy Varázslója. Sötét szeme végigmér, fekete kesztyűs kezével felemeli pálcáját.<br><br>
+    — <em>Máris itt vagy. Tudtam, hogy jössz. De te sem fogsz innen élve kijutni.</em> —<br><br>
+    Mögötte <strong>ragyogó arany kincsesláda</strong> áll.`,
+    choices: () => {
+      const ch = [
+        ['⚔ Megküzdesz Zagorral', () => startCombat('ZAGOR, a Varázsló', 11, 18, 'final_victory', false)],
+      ];
+      if (hasItem('varázstekercs')) {
+        ch.push(['📜 Felolvasod a varázstekercset (gyengíti a Varázslót)', () => {
+          G.flags.scroll_used = true;
+          flash('📜 A tekercs meggyengíti Zagort! -3 ÜGY ideiglenesen.');
+          startCombat('ZAGOR (gyengítve)', 8, 18, 'final_victory', false);
+        }]);
+      }
+      return ch;
+    }
+  },
+
+  final_victory: victory,
+
+  east_crawl: {
+    num: 'Szűk átjáró',
+    text: `A szűk kőátjárón kúszva haladsz. A falba vésett rúnák kísérteties zöldes fénnyel izzanak. Az átjáró egy kis szobába vezet — benne <strong>Elvarázsolt Kéz</strong> csoszog a padlón.`,
+    choices: () => [
+      ['Megküzdesz a Kézzel', () => startCombat('Elvarázsolt Kéz', 6, 4, 'crawl_won', false)],
+      ['Visszamész', () => goScene('west_room_looted')],
+    ]
+  },
+
+  crawl_won: () => {
+    addKey('ezüstkulcs');
+    flash('🗝 Ezüstkulcs megtalálva!');
+    goScene('crawl_chest');
+  },
+
+  crawl_chest: {
+    num: '117',
+    get text() { return `A Kéz egy kőhasadékban rejtegette a kulcsát — megtalálod az <strong>ezüstkulcsot</strong>. Ez lehet a harmadik...<br><br>
+      Kulcsaid: <strong>${G.keys.join(', ')}</strong> (${G.keys.length}/3)`; },
+    choices: () => [
+      ['Visszamész a főfolyosóra', () => goScene('crossroads')]
+    ]
+  }
+
+};
+
+// ===================================================
+//  ENTRY POINT & INIT
+// ===================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('startBtn');
+  if (btn) {
+    btn.addEventListener('click', startGame);
+  }
+  showScreen('title');
+});
+</script>
+
+</body>
+</html>
 
 
 
